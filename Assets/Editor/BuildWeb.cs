@@ -29,6 +29,8 @@ public static class BuildWeb {
     cfg.boulderMat = Mat("Boulder", new Color(0.45f, 0.43f, 0.4f));
     cfg.obstacleMat = Mat("Root", new Color(0.35f, 0.2f, 0.1f));
     cfg.idolMat = Mat("Idol", new Color(1f, 0.8f, 0.1f));
+    AudioClip Sfx(string n) => AssetDatabase.LoadAssetAtPath<AudioClip>($"Assets/Audio/SFX/{n}.ogg");
+    cfg.hissClip = Sfx("gator_hiss_snap"); cfg.dartClip = Sfx("dart_whoosh_click"); cfg.pitFallClip = Sfx("pit_fall"); cfg.stumbleClip = Sfx("stumble");
     cfg.pitMat = Mat("Pit", new Color(0.04f, 0.03f, 0.02f));
     cfg.dartMat = Mat("Dart", new Color(0.8f, 0.78f, 0.7f));
     cfg.warnMat = Mat("Warn", new Color(0.9f, 0.75f, 0.2f));

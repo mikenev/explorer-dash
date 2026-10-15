@@ -9,6 +9,8 @@ namespace ExplorerDash {
     public static float LaneX(int lane) => (lane - 1) * LaneWidth;
     public Material groundMat, edgeMat, playerMat, boulderMat, obstacleMat, idolMat;
     /// <summary>M2 gray-box materials (created at runtime if not assigned).</summary>
+    /// <summary>SFX from Assets/Audio/SFX (assigned by BuildWeb.SetupScene); Sfx falls back to procedural clips if null.</summary>
+    public AudioClip hissClip, dartClip, pitFallClip, stumbleClip;
     public Material pitMat, dartMat, warnMat, gatorMat, bushMat, vineMat;
     public Material GetMat(ref Material m, Color c){
       if (!m){ var sh = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard"); m = new Material(obstacleMat ? obstacleMat : new Material(sh)); m.SetColor("_BaseColor", c); m.color = c; }

@@ -26,13 +26,13 @@ namespace ExplorerDash {
     public void Stumble(){
       if (stumbleCooldown > 0 || GameManager.I.State != GameState.Playing) return;
       stumbleTimer = stumbleSlowTime; stumbleCooldown = 1.0f;
-      OnStumble?.Invoke();
+      OnStumble?.Invoke(); Sfx.Stumble();
     }
     /// <summary>Pit death: ends the run and drops the explorer into the pit.</summary>
     public void FallIntoPit(){
       if (GameManager.I.State != GameState.Playing) return;
       falling = true; vy = 0; slideTimer = 0;
-      GameManager.I.GameOver("FELL INTO A PIT!");
+      Sfx.PitFall(); GameManager.I.GameOver("FELL INTO A PIT!");
     }
     void Update(){
       if (falling){ vy -= gravity * Time.deltaTime; y = Mathf.Max(-6f, y + vy * Time.deltaTime); var fp = transform.position; fp.y = y; transform.position = fp; return; }

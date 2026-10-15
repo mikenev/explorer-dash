@@ -45,7 +45,8 @@ namespace ExplorerDash {
       float hw = groundWidth / 2; var mat = GameConfig.I.groundMat;
       void Slab(float z0, float z1, float x0, float x1){
         if (z1 - z0 < 0.001f || x1 - x0 < 0.001f) return;
-        Prim(groundRoot, PrimitiveType.Cube, new Vector3((x0 + x1) / 2, -0.25f, (z0 + z1) / 2), new Vector3(x1 - x0, 0.5f, z1 - z0), mat);
+        var slab = Prim(groundRoot, PrimitiveType.Cube, new Vector3((x0 + x1) / 2, -0.25f, (z0 + z1) / 2), new Vector3(x1 - x0, 0.5f, z1 - z0), mat);
+        if (transform.Find("TileArt")) slab.GetComponent<Renderer>().enabled = false; // ArtM3 stone path is drawn instead
       }
       gaps.Sort((a, b) => a.z0 != b.z0 ? a.z0.CompareTo(b.z0) : a.x0.CompareTo(b.x0));
       float z = 0; int gi = 0;
