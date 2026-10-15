@@ -11,6 +11,7 @@ namespace ExplorerDash {
     void Awake(){ for (int i = 0; i < tileCount; i++) tiles.Add(TrackTile.Create(transform, tileLength)); }
     public void ResetTrack(){
       nextZ = -tileLength * 2; tileIndex = 0;
+      if (spawner) spawner.ResetPlan();
       foreach (var t in tiles) Place(t);
     }
     void Place(TrackTile t){

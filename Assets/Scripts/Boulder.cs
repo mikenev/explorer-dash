@@ -14,7 +14,7 @@ namespace ExplorerDash {
         if (Gap <= minGap){ Gap = 0; gm.GameOver(); }
         transform.Rotate(Vector3.right, player.Speed * Time.deltaTime / radius * Mathf.Rad2Deg, Space.World);
       } else if (gm.State == GameState.GameOver){
-        Gap = Mathf.MoveTowards(Gap, -radius * 0.6f, 20f * Time.deltaTime); // roll over the explorer
+        if (!player.IsFalling) Gap = Mathf.MoveTowards(Gap, -radius * 0.6f, 20f * Time.deltaTime); // roll over the explorer
       }
       Place();
     }

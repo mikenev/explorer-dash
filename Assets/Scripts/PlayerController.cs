@@ -10,25 +10,36 @@ namespace ExplorerDash {
     public float Speed { get; private set; }
     public bool IsSliding => slideTimer > 0; public bool IsGrounded => y <= 0f && vy <= 0f;
     public int Lane => lane;
+    /// <summary>Current collider height (standing 1.8, sliding 0.8) and feet height, for obstacle overlap checks.</summary>
+    public float Height => IsSliding ? 0.8f : 1.8f; public float FeetY => y; public const float Radius = 0.4f;
+    public bool IsFalling => falling;
     public event System.Action OnStumble;
     int lane = 1; float x, y, vy, slideTimer, stumbleTimer, stumbleCooldown;
-    CapsuleCollider col; Transform body;
+    CapsuleCollider col; Transform body; bool falling;
     Vector2 swipeStart; bool swiping; const float SwipeMin = 50f;
     void Awake(){ col = GetComponent<CapsuleCollider>(); body = transform.GetChild(0); }
     public void ResetPlayer(){
-      lane = 1; x = 0; y = 0; vy = 0; slideTimer = 0; stumbleTimer = 0; stumbleCooldown = 0; Speed = startSpeed;
+      lane = 1; x = 0; y = 0; vy = 0; slideTimer = 0; stumbleTimer = 0; stumbleCooldown = 0; Speed = startSpeed; falling = false;
       transform.position = new Vector3(0, 0, 0); ApplyPose();
     }
     /// <summary>Called by obstacles (IObstacle) or failed actions. Slows the runner so the boulder closes in.</summary>
     public void Stumble(){
       if (stumbleCooldown > 0 || GameManager.I.State != GameState.Playing) return;
       stumbleTimer = stumbleSlowTime; stumbleCooldown = 1.0f;
-      OnStumble?.Invoke();
+      OnStumble?.Invoke(); Sfx.Stumble();
+    }
+    /// <summary>Pit death: ends the run and drops the explorer into the pit.</summary>
+    public void FallIntoPit(){
+      if (GameManager.I.State != GameState.Playing) return;
+      falling = true; vy = 0; slideTimer = 0;
+      Sfx.PitFall(); GameManager.I.GameOver("FELL INTO A PIT!");
     }
     void Update(){
+      if (falling){ vy -= gravity * Time.deltaTime; y = Mathf.Max(-6f, y + vy * Time.deltaTime); var fp = transform.position; fp.y = y; transform.position = fp; return; }
       if (GameManager.I.State != GameState.Playing) { if (GameManager.I.State == GameState.Ready) ApplyPose(); return; }
       float dt = Time.deltaTime;
-      ReadInput();
+      // The Space/click that started the run must not also jump.
+      if (Time.frameCount != GameManager.I.StartFrame) ReadInput(); else swiping = false;
       Speed = Mathf.Min(maxSpeed, Speed + accel * dt);
       stumbleCooldown -= dt;
       float sp = Speed;

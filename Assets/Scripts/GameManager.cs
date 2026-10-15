@@ -12,7 +12,9 @@ namespace ExplorerDash {
     public GameState State { get; private set; } = GameState.Ready;
     public float Distance { get; private set; }
     public int HighScore { get; private set; }
-    bool newHigh;
+    bool newHigh; string deathText = "CRUSHED!";
+    /// <summary>Frame the run started on; PlayerController ignores input on that frame so the start key doesn't jump.</summary>
+    public int StartFrame { get; private set; } = -1;
     float startZ;
     void Awake(){ I = this; HighScore = PlayerPrefs.GetInt(HighKey, 0); Application.targetFrameRate = 60; }
     void Start(){ ResetRun(); }
@@ -20,9 +22,10 @@ namespace ExplorerDash {
       player.ResetPlayer(); boulder.ResetBoulder(); track.ResetTrack();
       startZ = player.transform.position.z; Distance = 0; newHigh = false; State = GameState.Ready;
     }
-    public void StartRun(){ if (State == GameState.Ready) State = GameState.Playing; }
-    public void GameOver(){
+    public void StartRun(){ if (State == GameState.Ready){ State = GameState.Playing; StartFrame = Time.frameCount; } }
+    public void GameOver(string reason = "CRUSHED!"){
       if (State != GameState.Playing) return;
+      deathText = reason;
       State = GameState.GameOver;
       int s = Mathf.FloorToInt(Distance);
       if (s > HighScore){ HighScore = s; newHigh = true; PlayerPrefs.SetInt(HighKey, s); PlayerPrefs.Save(); }
@@ -43,12 +46,12 @@ namespace ExplorerDash {
       big.fontSize = Mathf.RoundToInt(48 * s); small.fontSize = Mathf.RoundToInt(26 * s);
       GUI.Label(new Rect(20*s, 15*s, 600*s, 40*s), $"Distance: {Mathf.FloorToInt(Distance)} m", small);
       GUI.Label(new Rect(20*s, 50*s, 600*s, 40*s), $"Best: {HighScore} m", small);
-      GUI.Label(new Rect(20*s, 85*s, 600*s, 40*s), $"Boulder: {boulder.Gap:0.0} m behind", small);
+      GUI.Label(new Rect(20*s, 85*s, 600*s, 40*s), $"Boulder: {Mathf.Max(0f, boulder.Gap):0.0} m behind", small);
       var full = new Rect(0, 0, Screen.width, Screen.height);
       if (State == GameState.Ready)
-        GUI.Label(full, "EXPLORER DASH\n<size=" + Mathf.RoundToInt(26*s) + ">You grabbed the golden idol... RUN!\nA/D or ←/→ or swipe: change lane   W/↑/Space: jump   S/↓: slide\nPress Space / click / tap to start</size>", RichBig());
+        GUI.Label(full, "EXPLORER DASH\n<size=" + Mathf.RoundToInt(26*s) + ">You grabbed the golden idol... RUN!\nA/D or Arrows or swipe: change lane   W/Up/Space: jump   S/Down: slide\nPress Space / click / tap to start</size>", RichBig());
       else if (State == GameState.GameOver)
-        GUI.Label(full, "CRUSHED!\n<size=" + Mathf.RoundToInt(30*s) + ">" + Mathf.FloorToInt(Distance) + " m" + (newHigh ? "  NEW BEST!" : "") + "\nPress Space / R / tap to restart</size>", RichBig());
+        GUI.Label(full, deathText + "\n<size=" + Mathf.RoundToInt(30*s) + ">" + Mathf.FloorToInt(Distance) + " m" + (newHigh ? "  NEW BEST!" : "") + "\nPress Space / R / tap to restart</size>", RichBig());
     }
     GUIStyle RichBig(){ big.richText = true; return big; }
   }
