@@ -17,7 +17,7 @@ namespace ExplorerDash {
       for (int s = 0; s < 2; s++){
         float x = (s == 0 ? -1 : 1) * (hw + 0.05f);
         Box(g.transform, new Vector3(x, HitCenterY, 0), new Vector3(0.1f, 0.35f, 0.35f), warn); // carved hole plate
-        var p = Box(g.transform, new Vector3(x, HitCenterY, 0), Vector3.zero, cfg.GetMat(ref cfg.dartMat, new Color(0.8f, 0.78f, 0.7f)), PrimitiveType.Sphere);
+        var p = Sphere(g.transform, new Vector3(x, HitCenterY, 0), Vector3.zero, cfg.GetMat(ref cfg.dartMat, new Color(0.8f, 0.78f, 0.7f)));
         d.puffs[s] = p.transform;
       }
       for (int i = 0; i < d.darts.Length; i++){

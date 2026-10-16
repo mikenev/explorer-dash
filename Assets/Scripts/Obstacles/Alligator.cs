@@ -21,7 +21,7 @@ namespace ExplorerDash {
       if (bushArt){
         a.bush = Root(g.transform, new Vector3(a.bushX, 0, 0), "Bush").transform; a.bushY = 0;
         var b = Object.Instantiate(bushArt, a.bush, false); b.transform.localScale = Vector3.one * 1.6f;
-      } else a.bush = Box(g.transform, new Vector3(a.bushX, 0.8f, 0), new Vector3(2f, 1.6f, 2.6f), cfg.GetMat(ref cfg.bushMat, new Color(0.12f, 0.5f, 0.12f)), PrimitiveType.Sphere).transform;
+      } else a.bush = Sphere(g.transform, new Vector3(a.bushX, 0.8f, 0), new Vector3(2f, 1.6f, 2.6f), cfg.GetMat(ref cfg.bushMat, new Color(0.12f, 0.5f, 0.12f))).transform;
       var gm = cfg.GetMat(ref cfg.gatorMat, new Color(0.3f, 0.4f, 0.18f));
       a.gator = Root(g.transform, new Vector3(a.bushX, 0, 0), "Gator").transform;
       Box(a.gator, new Vector3(0, Height / 2, 0), new Vector3(HitSize.x * 0.9f, Height * 0.8f, 2f), gm);
