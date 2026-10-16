@@ -39,6 +39,19 @@ namespace ExplorerDash {
       var c = g.GetComponent<Collider>(); if (c) Destroy(c);
       return g;
     }
+    static Mesh sphereMesh;
+    /// <summary>Collider-free sphere: same look as CreatePrimitive(Sphere) without adding a SphereCollider
+    /// (that type is stripped from WebGL builds, so CreatePrimitive logs "Can't add component").</summary>
+    protected static GameObject Sphere(Transform parent, Vector3 localPos, Vector3 scale, Material m){
+      if (!sphereMesh) sphereMesh = Resources.GetBuiltinResource<Mesh>("New-Sphere.fbx");
+      if (!sphereMesh) sphereMesh = Resources.GetBuiltinResource<Mesh>("Sphere.fbx");
+      var g = new GameObject("Sphere"); g.transform.SetParent(parent, false);
+      g.transform.localPosition = localPos; g.transform.localScale = scale;
+      g.AddComponent<MeshFilter>().sharedMesh = sphereMesh;
+      var r = g.AddComponent<MeshRenderer>();
+      if (m) r.sharedMaterial = m;
+      return g;
+    }
     protected static GameObject Root(Transform parent, Vector3 localPos, string name){
       var g = new GameObject(name); g.transform.SetParent(parent, false); g.transform.localPosition = localPos; return g;
     }
