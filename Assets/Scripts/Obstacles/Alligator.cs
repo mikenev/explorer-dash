@@ -9,7 +9,7 @@ namespace ExplorerDash {
     public override bool CanAvoidByJump => true;
     public int targetLane;
     enum S { Hidden, Shake, Lunge, Out, Retreat } S state;
-    Transform bush, gator, jaw; Animator anim; float timer, bushX, outX, side, bushY = 0.8f;
+    Transform bush, gator, jaw; Animator anim; Renderer[] artRenderers; float timer, bushX, outX, side, bushY = 0.8f;
     public static Alligator Create(Transform parent, Vector3 localPos, int lane){
       // localPos is the lane spawn point; the bush sits on the nearer wall (centre lane: random side).
       var g = Root(parent, new Vector3(0, 0, localPos.z), "Alligator"); var a = g.AddComponent<Alligator>();
@@ -33,6 +33,8 @@ namespace ExplorerDash {
         ga.transform.localRotation = Quaternion.Euler(0, 180f, 0);
         foreach (var c in ga.GetComponentsInChildren<Collider>()) Destroy(c);
         a.anim = ga.GetComponentInChildren<Animator>(); a.jaw = null;
+        a.artRenderers = ga.GetComponentsInChildren<Renderer>();
+        foreach (var r in a.artRenderers) if (r is SkinnedMeshRenderer smr) smr.updateWhenOffscreen = true; // bounds follow the Lunge animation
       }
       a.gator.gameObject.SetActive(false);
       return a;
@@ -56,7 +58,13 @@ namespace ExplorerDash {
         if (ttr < -0.5f){ state = S.Retreat; timer = 0; }
       }
       if (state == S.Retreat) gator.localPosition = new Vector3(Mathf.MoveTowards(gator.localPosition.x, bushX, 8f * Time.deltaTime), 0, 0);
-      if (state == S.Lunge || state == S.Out) CheckHit(gator.position + Vector3.up * Height / 2, HitSize);
+      if (state == S.Lunge || state == S.Out){
+        if (artRenderers != null && artRenderers.Length > 0){
+          // Hit box follows the animated art: z extent from the skinned bounds (the snout reaches ~1 m toward the runner on Lunge).
+          var b = artRenderers[0].bounds; foreach (var r in artRenderers) b.Encapsulate(r.bounds);
+          CheckHit(new Vector3(gator.position.x, Height / 2, b.center.z), new Vector3(HitSize.x, Height, Mathf.Max(1f, b.size.z * 0.9f)));
+        } else CheckHit(gator.position + Vector3.up * Height / 2, HitSize);
+      }
     }
   }
 }
