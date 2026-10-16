@@ -24,7 +24,30 @@ namespace ExplorerDash {
         var dt = Box(g.transform, new Vector3(0, HitCenterY, 0), new Vector3(0.06f, 0.35f, 0.06f), cfg.GetMat(ref cfg.dartMat, new Color(0.8f, 0.78f, 0.7f)), PrimitiveType.Cylinder);
         dt.transform.localRotation = Quaternion.Euler(0, 0, 90); dt.SetActive(false); d.darts[i] = dt.transform;
       }
+      if (ArtM3Skin.Enabled && ArtM3Skin.Load("Dart")) d.SkinArt(g, hw);
       return d;
+    }
+    /// <summary>ArtM3 visuals: carved emitter masks on both wall faces, dust-puff meshes in place of the gray-box puff spheres
+    /// (still pulsed via localScale by Update) and dart meshes in place of the cylinders (still positioned by Update).
+    /// Visual only: timing, hit box and CheckHit are unchanged.</summary>
+    void SkinArt(GameObject g, float hw){
+      foreach (var r in g.GetComponentsInChildren<Renderer>()) r.enabled = false;
+      for (int s = 0; s < 2; s++){
+        float side = s == 0 ? -1 : 1; var yaw = Quaternion.Euler(0, -side * 90f, 0); // art faces +Z -> turn to face the path
+        Art("DartEmitter", g.transform, new Vector3(side * hw, HitCenterY, 0), yaw);
+        var puff = Art("DustPuff", g.transform, new Vector3(side * (hw - 0.1f), HitCenterY, 0), yaw);
+        puff.localScale = Vector3.zero; Destroy(puffs[s].gameObject); puffs[s] = puff;
+      }
+      for (int i = 0; i < darts.Length; i++){
+        float dir = i % 2 == 0 ? 1 : -1; // matches the travel direction set in Update
+        var a = Art("Dart", g.transform, darts[i].localPosition, Quaternion.Euler(0, dir * 90f, 0));
+        a.gameObject.SetActive(false); Destroy(darts[i].gameObject); darts[i] = a;
+      }
+    }
+    static Transform Art(string n, Transform parent, Vector3 pos, Quaternion rot){
+      var a = Object.Instantiate(ArtM3Skin.Load(n), parent, false); a.name = n + "Art";
+      foreach (var c in a.GetComponentsInChildren<Collider>()) Destroy(c);
+      a.transform.localPosition = pos; a.transform.localRotation = rot; return a.transform;
     }
     void Update(){
       if (!Playing) return;

@@ -9,5 +9,8 @@
  "Foliage_Fern": 96,
  "Pit": 132,
  "Vine": 164,
- "Alligator": 258
+ "Alligator": 258,
+ "Dart": 48,
+ "DartEmitter": 180,
+ "DustPuff": 120
 }

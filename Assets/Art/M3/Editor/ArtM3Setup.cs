@@ -37,9 +37,12 @@ public static class ArtM3Setup {
       {"Tooth", new Color(0.95f,0.93f,0.85f)},
       {"Void", new Color(0.03f,0.03f,0.03f)},
       {"Eye", new Color(0.95f,0.85f,0.20f)},
+      {"Dust", new Color(0.82f,0.74f,0.58f)},
+      {"Fletch", new Color(0.75f,0.18f,0.12f)},
+      {"Wood", new Color(0.62f,0.48f,0.30f)},
   };
-  static readonly HashSet<string> Looping = new() { "Run", "Idle", "Sway" };
-  static readonly string[] Static = { "Boulder", "GoldenIdol", "Track_StonePath", "Track_Wall", "Foliage_Bush", "Foliage_Palm", "Foliage_Fern", "Pit" };
+  static readonly HashSet<string> Looping = new() { "Run", "Idle", "Sway", "Puff" };
+  static readonly string[] Static = { "Boulder", "GoldenIdol", "Track_StonePath", "Track_Wall", "Foliage_Bush", "Foliage_Palm", "Foliage_Fern", "Pit", "Dart", "DartEmitter" };
 
   [MenuItem("Explorer Dash/Art M3/Rebuild Art Prefabs")]
   public static void Rebuild(){
@@ -51,8 +54,9 @@ public static class ArtM3Setup {
     Prefab("Explorer", ExplorerController());
     Prefab("Alligator", SimpleController("Alligator", "Idle", ("Lunge", "Lunge")));
     Prefab("Vine", SimpleController("Vine", "Sway"));
+    Prefab("DustPuff", SimpleController("DustPuff", "Puff"));
     AssetDatabase.SaveAssets();
-    Debug.Log("ArtM3: rebuilt " + (Static.Length + 3) + " prefabs");
+    Debug.Log("ArtM3: rebuilt " + (Static.Length + 4) + " prefabs");
   }
   public static void BatchRebuild(){
     int code = 0;
@@ -78,7 +82,7 @@ public static class ArtM3Setup {
     imp.isReadable = false; imp.meshCompression = ModelImporterMeshCompression.Medium;
     imp.importNormals = ModelImporterNormals.Import; imp.importBlendShapes = false;
     string n = Path.GetFileNameWithoutExtension(path);
-    bool animated = n == "Explorer" || n == "Alligator" || n == "Vine";
+    bool animated = n == "Explorer" || n == "Alligator" || n == "Vine" || n == "DustPuff";
     imp.animationType = animated ? ModelImporterAnimationType.Generic : ModelImporterAnimationType.None;
     imp.importAnimation = animated;
     foreach (var kv in mats) imp.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(Material), kv.Key), kv.Value);
@@ -143,7 +147,7 @@ public static class ArtM3Setup {
     var model = AssetDatabase.LoadAssetAtPath<GameObject>($"{Models}/{n}.fbx");
     var go = (GameObject)PrefabUtility.InstantiatePrefab(model); go.name = "M3_" + n;
     foreach (var r in go.GetComponentsInChildren<Renderer>()){
-      r.shadowCastingMode = n.StartsWith("Track_") ? UnityEngine.Rendering.ShadowCastingMode.Off : UnityEngine.Rendering.ShadowCastingMode.On;
+      r.shadowCastingMode = n.StartsWith("Track_") || n == "DustPuff" || n == "Dart" ? UnityEngine.Rendering.ShadowCastingMode.Off : UnityEngine.Rendering.ShadowCastingMode.On;
       if (r is SkinnedMeshRenderer smr){ smr.updateWhenOffscreen = false; smr.quality = SkinQuality.Bone1; }
     }
     if (ctl){ if (!go.TryGetComponent<Animator>(out var a)) a = go.AddComponent<Animator>(); a.runtimeAnimatorController = ctl; a.applyRootMotion = false; a.cullingMode = AnimatorCullingMode.CullUpdateTransforms; }
@@ -153,7 +157,7 @@ public static class ArtM3Setup {
   /// <summary>Sanity checks for headless runs: prefabs load, renderers use URP materials, clips/states exist, tri counts.</summary>
   public static void Validate(){
     int tris = 0;
-    foreach (var n in Static.Concat(new[]{ "Explorer", "Alligator", "Vine" })){
+    foreach (var n in Static.Concat(new[]{ "Explorer", "Alligator", "Vine", "DustPuff" })){
       var p = Resources.Load<GameObject>("ArtM3/M3_" + n) ?? throw new System.Exception("missing prefab " + n);
       int t = 0; var b = new Bounds(); bool first = true;
       foreach (var r in p.GetComponentsInChildren<Renderer>(true)){
