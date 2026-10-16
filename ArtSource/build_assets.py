@@ -12,7 +12,7 @@ PAL = {  # name: rgb (flat palette, shared with the Unity material remap)
  "Stone":(0.50,0.48,0.42),"StoneDark":(0.33,0.32,0.29),"Moss":(0.30,0.45,0.18),"Gold":(1.0,0.76,0.15),
  "Gem":(0.10,0.75,0.55),"Leaf":(0.16,0.46,0.18),"LeafLight":(0.32,0.62,0.22),"Vine":(0.20,0.36,0.12),
  "Gator":(0.24,0.36,0.18),"GatorBelly":(0.70,0.68,0.45),"Mouth":(0.70,0.25,0.25),"Tooth":(0.95,0.93,0.85),
- "Void":(0.03,0.03,0.03),"Eye":(0.95,0.85,0.20),
+ "Void":(0.03,0.03,0.03),"Dust":(0.82,0.74,0.58),"Fletch":(0.75,0.18,0.12),"Wood":(0.62,0.48,0.30),"Eye":(0.95,0.85,0.20),
 }
 def mat(n):
     m = bpy.data.materials.get(n)
@@ -295,5 +295,38 @@ def hazards():
         25:{"Body":{"r":(0,0,0),"l":(0,0,0)},"Head":(0,0,0),"Jaw":(0,0,0),"Tail1":(0,0,0)}},loop=False)
     export("Alligator",[arm,ob])
 
-explorer(); boulder(); idol(); tiles(); hazards()
+def darts():
+    """Dart (tip points -Y = Unity +Z), dart-hole emitter mask (faces -Y = Unity +Z, hole at origin), dust puff (Puff loop)."""
+    reset(); b = Builder("Dart")
+    b.add("cyl","Wood",(0,0,0),(0.035,0.035,0.30),rot=(90,0,0),seg=5)
+    b.add("cone","Brass",(0,-0.19,0),(0.05,0.05,0.09),rot=(90,0,0),seg=5)
+    for a in (0,90): b.add("box","Fletch",(0,0.13,0),(0.11,0.07,0.008),rot=(0,a,0))
+    ob=b.build(); stat("Dart",b); export("Dart",[ob])
+    reset(); b = Builder("DartEmitter")  # carved temple-mask plate, 0.7 m, origin = hole centre on the wall face
+    b.add("box","StoneDark",(0,0.03,0),(0.72,0.06,0.72))
+    b.add("box","Stone",(0,-0.02,0.24),(0.56,0.05,0.14))           # brow
+    b.add("box","Moss",(0.2,-0.03,0.30),(0.18,0.03,0.06))
+    for sx in (-1,1):
+        b.add("cyl","Gem",(sx*0.16,-0.03,0.14),(0.08,0.08,0.03),rot=(90,0,0),seg=6)   # eyes
+        b.add("box","Stone",(sx*0.22,-0.02,-0.04),(0.12,0.05,0.30))  # cheeks
+        b.add("cone","Stone",(sx*0.26,-0.02,0.38),(0.10,0.10,0.14),seg=4)  # ears
+    b.add("cyl","Stone",(0,-0.03,0),(0.22,0.22,0.06),rot=(90,0,0),seg=8)  # lips ring
+    b.add("cyl","Void",(0,-0.065,0),(0.12,0.12,0.02),rot=(90,0,0),seg=8)   # hole
+    b.add("box","Stone",(0,-0.02,-0.26),(0.40,0.05,0.10))            # chin
+    ob=b.build(); stat("DartEmitter",b); export("DartEmitter",[ob])
+    reset()
+    arm = armature("DustPuff",[("P0",(0,0,0),(0,0,0.2),None)]+[(f"P{i}",(0,0,0),(0,0,0.2),"P0") for i in range(1,6)])
+    b = Builder("DustPuff")
+    offs=[(0,0,0),(0.12,-0.05,0.10),(-0.12,-0.04,0.08),(0.08,-0.06,-0.10),(-0.10,-0.05,-0.08),(0,-0.10,0.02)]
+    for i,o in enumerate(offs): b.add("sphere","Dust",o,(0.22,0.22,0.22),bone=f"P{i}",jitter=0.01)
+    ob=b.build(); skin(ob,arm); stat("DustPuff",b)
+    # loop: puff lobes drift outward (-Y = into the track) while the cluster spins; root scale is pulsed by DartTrap
+    k={}
+    for f,t in ((1,0.0),(9,0.5),(17,1.0)):
+        k[f]={f"P{i}":{"r":(0,0,0),"l":(o[0]*t*2, -o[2]*t*2, (o[1]-0.1)*t*-1.5) if i else (0,0,0)} for i,o in enumerate(offs)}
+        k[f]["P0"]={"r":(0,120*t,0),"l":(0,0,0)}
+    action(arm,"Puff",(1,17),k)
+    export("DustPuff",[arm,ob])
+
+explorer(); boulder(); idol(); tiles(); hazards(); darts()
 import json; json.dump(STATS, open(f"{OUT}/tri_counts.json","w"), indent=1); print("STATS", STATS)

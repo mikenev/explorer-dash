@@ -17,8 +17,18 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Dust
+    second: {fileID: 2100000, guid: 2cefb43ce65863ccc86a4f924c98a679, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Eye
     second: {fileID: 2100000, guid: 766b2f1407e37b87282071a3a1403888, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Fletch
+    second: {fileID: 2100000, guid: 8258cac767d50e75eb3d21414c77176b, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -134,6 +144,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Void
     second: {fileID: 2100000, guid: 514b50a66471c2777ad54504e1dd1f79, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Wood
+    second: {fileID: 2100000, guid: e29f9f9cd234b7211a26ddd373c05ba9, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
