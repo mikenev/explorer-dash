@@ -6,6 +6,6 @@ by `ArtSource/build_assets.py` (Blender 4.2.3, run headless). **No third-party a
 
 | Asset | Source | License |
 |---|---|---|
-| Explorer ("Juniper Vale"), Boulder, Golden Idol, Track_StonePath, Track_Wall, Foliage_Bush/Palm/Fern, Pit, Vine, Alligator, Dart, DartEmitter, DustPuff | Original, `ArtSource/build_assets.py` | Same as this repository |
+| Explorer ("Juniper Vale"), Boulder, Golden Idol, Track_StonePath, Track_Wall, Foliage_Bush/Palm/Fern, Pit, Vine, Alligator, Dart, DartEmitter, DustPuff, StumbleRoot | Original, `ArtSource/build_assets.py` | Same as this repository |
 
 Tools (not redistributed): Blender 4.2.3 (GPL; output files are not covered by the GPL), Unity 6000.3.26f1.
