@@ -12,7 +12,7 @@ PAL = {  # name: rgb (flat palette, shared with the Unity material remap)
  "Stone":(0.50,0.48,0.42),"StoneDark":(0.33,0.32,0.29),"Moss":(0.30,0.45,0.18),"Gold":(1.0,0.76,0.15),
  "Gem":(0.10,0.75,0.55),"Leaf":(0.16,0.46,0.18),"LeafLight":(0.32,0.62,0.22),"Vine":(0.20,0.36,0.12),
  "Gator":(0.24,0.36,0.18),"GatorBelly":(0.70,0.68,0.45),"Mouth":(0.70,0.25,0.25),"Tooth":(0.95,0.93,0.85),
- "Void":(0.03,0.03,0.03),"Dust":(0.82,0.74,0.58),"Fletch":(0.75,0.18,0.12),"Wood":(0.62,0.48,0.30),"Eye":(0.95,0.85,0.20),
+ "Void":(0.03,0.03,0.03),"Dust":(0.82,0.74,0.58),"Fletch":(0.75,0.18,0.12),"Wood":(0.62,0.48,0.30),"Bark":(0.40,0.25,0.13),"BarkDark":(0.25,0.15,0.08),"Eye":(0.95,0.85,0.20),
 }
 def mat(n):
     m = bpy.data.materials.get(n)
@@ -328,5 +328,25 @@ def darts():
     action(arm,"Puff",(1,17),k)
     export("DustPuff",[arm,ob])
 
-explorer(); boulder(); idol(); tiles(); hazards(); darts()
+def root():
+    """Gnarled tree root arching across one lane. Fits the StumbleRoot hit box: 2.0 m (X) x 0.5 m (Y up) x 0.5 m (Z), origin at ground centre."""
+    reset(); b = Builder("StumbleRoot")
+    def limb(pts, r0, r1, m):
+        for i in range(len(pts)-1):
+            a, c = Vector(pts[i]), Vector(pts[i+1]); d = c-a; mid=(a+c)/2; t=i/(len(pts)-1)
+            q = d.to_track_quat('Z','Y').to_euler()
+            b.add("cyl", m, tuple(mid), (r0+(r1-r0)*t, r0+(r1-r0)*t, d.length+0.04), rot=tuple(math.degrees(x) for x in q), seg=6, jitter=0.008)
+    N=7; main=[(-1.0+2.0*i/N, 0.03*math.sin(i*1.7), 0.06+0.34*math.sin(math.pi*i/N)) for i in range(N+1)]
+    main[0]=(-1.0,0,-0.05); main[-1]=(1.0,0.02,-0.05)
+    limb(main, 0.22, 0.16, "Bark")
+    sec=[(-0.85,0.12,-0.04),(-0.45,0.14,0.22),(0.05,0.10,0.30),(0.5,0.14,0.18),(0.8,0.12,-0.04)]
+    limb(sec, 0.11, 0.08, "BarkDark")
+    for x,y in ((-0.95,-0.15),(-0.9,0.18),(0.92,-0.14),(0.95,0.17)):  # rootlets into the ground
+        limb([(x*0.95,0,0.05),(x*1.05,y,-0.03)], 0.08, 0.05, "BarkDark")
+    for x in (-0.55,0.3): b.add("sphere","Bark",(x,0.0,0.06+0.34*math.sin(math.pi*(x+1)/2)),(0.24,0.22,0.22),jitter=0.02)  # knots
+    b.add("sphere","Moss",(-0.2,-0.02,0.42),(0.30,0.20,0.08)); b.add("sphere","Moss",(0.62,0.05,0.31),(0.18,0.14,0.06))
+    b.add("box","Leaf",(0.15,-0.12,0.44),(0.12,0.05,0.02),rot=(20,0,30))
+    ob=b.build(); stat("StumbleRoot",b); export("StumbleRoot",[ob])
+
+explorer(); boulder(); idol(); tiles(); hazards(); darts(); root()
 import json; json.dump(STATS, open(f"{OUT}/tri_counts.json","w"), indent=1); print("STATS", STATS)

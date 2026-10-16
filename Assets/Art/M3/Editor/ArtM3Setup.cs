@@ -40,9 +40,11 @@ public static class ArtM3Setup {
       {"Dust", new Color(0.82f,0.74f,0.58f)},
       {"Fletch", new Color(0.75f,0.18f,0.12f)},
       {"Wood", new Color(0.62f,0.48f,0.30f)},
+      {"Bark", new Color(0.40f,0.25f,0.13f)},
+      {"BarkDark", new Color(0.25f,0.15f,0.08f)},
   };
   static readonly HashSet<string> Looping = new() { "Run", "Idle", "Sway", "Puff" };
-  static readonly string[] Static = { "Boulder", "GoldenIdol", "Track_StonePath", "Track_Wall", "Foliage_Bush", "Foliage_Palm", "Foliage_Fern", "Pit", "Dart", "DartEmitter" };
+  static readonly string[] Static = { "Boulder", "GoldenIdol", "Track_StonePath", "Track_Wall", "Foliage_Bush", "Foliage_Palm", "Foliage_Fern", "Pit", "Dart", "DartEmitter", "StumbleRoot" };
 
   [MenuItem("Explorer Dash/Art M3/Rebuild Art Prefabs")]
   public static void Rebuild(){
