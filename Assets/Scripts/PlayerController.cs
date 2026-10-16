@@ -36,7 +36,7 @@ namespace ExplorerDash {
     }
     void Update(){
       if (falling){ vy -= gravity * Time.deltaTime; y = Mathf.Max(-6f, y + vy * Time.deltaTime); var fp = transform.position; fp.y = y; transform.position = fp; return; }
-      if (GameManager.I.State != GameState.Playing) { if (GameManager.I.State == GameState.Ready) ApplyPose(); return; }
+      if (GameManager.I.State != GameState.Playing) { if (GameManager.I.State != GameState.GameOver) ApplyPose(); return; }
       float dt = Time.deltaTime;
       // The Space/click that started the run must not also jump.
       if (Time.frameCount != GameManager.I.StartFrame) ReadInput(); else swiping = false;
@@ -59,8 +59,8 @@ namespace ExplorerDash {
     }
     void Left(){ if (lane > 0) lane--; else Stumble(); }
     void Right(){ if (lane < GameConfig.LaneCount - 1) lane++; else Stumble(); }
-    void Jump(){ if (IsGrounded){ vy = jumpVelocity; slideTimer = 0; } }
-    void Slide(){ slideTimer = slideTime; if (y > 0) vy = -jumpVelocity * 1.5f; }
+    void Jump(){ if (IsGrounded){ vy = jumpVelocity; slideTimer = 0; Sfx.Jump(); } }
+    void Slide(){ if (!IsSliding) Sfx.Slide(); slideTimer = slideTime; if (y > 0) vy = -jumpVelocity * 1.5f; }
     void ReadInput(){
       var k = Keyboard.current;
       if (k != null){

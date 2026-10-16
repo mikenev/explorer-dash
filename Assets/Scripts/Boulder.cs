@@ -6,13 +6,18 @@ namespace ExplorerDash {
     public float startGap = 12f, minGap = 0f, recoverRate = 0.6f, maxGap = 12f, stumblePenalty = 5f, radius = 3f;
     public float Gap { get; private set; }
     void Start(){ player.OnStumble += () => Gap -= stumblePenalty; }
-    public void ResetBoulder(){ Gap = startGap; Place(); }
+    public float introGap = 40f;
+    /// <summary>Title: boulder waits out of sight (introGap); Intro: it rumbles into place at startGap.</summary>
+    public void ResetBoulder(){ Gap = introGap; Place(); }
     void Update(){
       var gm = GameManager.I;
       if (gm.State == GameState.Playing){
         Gap = Mathf.Min(maxGap, Gap + recoverRate * Time.deltaTime);
-        if (Gap <= minGap){ Gap = 0; gm.GameOver(); }
+        if (Gap <= minGap){ Gap = 0; gm.GameOver("CRUSHED BY THE BOULDER!"); }
         transform.Rotate(Vector3.right, player.Speed * Time.deltaTime / radius * Mathf.Rad2Deg, Space.World);
+      } else if (gm.State == GameState.Intro){
+        Gap = Mathf.MoveTowards(Gap, startGap, (introGap - startGap) / 1.2f * Time.deltaTime);
+        transform.Rotate(Vector3.right, 12f * Time.deltaTime / radius * Mathf.Rad2Deg, Space.World);
       } else if (gm.State == GameState.GameOver){
         if (!player.IsFalling) Gap = Mathf.MoveTowards(Gap, -radius * 0.6f, 20f * Time.deltaTime); // roll over the explorer
       }

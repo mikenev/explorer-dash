@@ -31,6 +31,11 @@ public static class BuildWeb {
     cfg.idolMat = Mat("Idol", new Color(1f, 0.8f, 0.1f));
     AudioClip Sfx(string n) => AssetDatabase.LoadAssetAtPath<AudioClip>($"Assets/Audio/SFX/{n}.ogg");
     cfg.hissClip = Sfx("gator_hiss_snap"); cfg.dartClip = Sfx("dart_whoosh_click"); cfg.pitFallClip = Sfx("pit_fall"); cfg.stumbleClip = Sfx("stumble");
+    AudioClip Mus(string n) => AssetDatabase.LoadAssetAtPath<AudioClip>($"Assets/Audio/Music/{n}.ogg");
+    cfg.jumpClip = Sfx("jump"); cfg.slideClip = Sfx("slide"); cfg.vineClip = Sfx("vine_swish"); cfg.crushedClip = Sfx("crushed");
+    cfg.uiClickClip = Sfx("ui_click"); cfg.rumbleLoop = Sfx("boulder_rumble_loop"); // loops are set on the AudioSource (Sfx)
+    cfg.runTheme = Mus("run_theme_loop"); cfg.titleSting = Mus("title_sting"); cfg.gameOverSting = Mus("gameover_sting");
+    cfg.footsteps = new[]{ Sfx("footstep_01"), Sfx("footstep_02"), Sfx("footstep_03"), Sfx("footstep_04") };
     cfg.pitMat = Mat("Pit", new Color(0.04f, 0.03f, 0.02f));
     cfg.dartMat = Mat("Dart", new Color(0.8f, 0.78f, 0.7f));
     cfg.warnMat = Mat("Warn", new Color(0.9f, 0.75f, 0.2f));

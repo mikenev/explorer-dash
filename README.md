@@ -24,6 +24,12 @@ A Unity 3D endless runner (original IP). A jungle explorer grabs a golden idol a
 - The boulder rolls behind you. Each stumble (hitting a root, or steering into the jungle wall) cuts the gap by 5 m; the gap slowly recovers. Gap 0 = crushed, game over, restart.
 - Distance score + local high score (PlayerPrefs `ExplorerDash.HighScore`).
 
+## UI & audio (M4)
+- Title screen -> first input unlocks audio (WebGL autoplay) and plays the title sting -> ~2.2 s intro (Juniper lifts the idol, the temple rumbles, the boulder rolls in) -> run.
+- HUD: distance, best, boulder gap (turns red when close). Game over: cause, distance, best, restart.
+- Audio (`Sfx.cs`, clips wired on `GameConfig` by `BuildWeb`): run theme + boulder rumble loops, title/game-over stings, footsteps, jump/slide/stumble/dart/gator/vine/pit/crushed/UI click.
+- Mute: **M** key or the on-screen button (persisted).
+
 ## Obstacle hooks (for M2)
 - `IObstacle` – `OnPlayerHit(PlayerController)`; the player's trigger collider calls it.
 - `ObstacleBase` – abstract MonoBehaviour, default = `player.Stumble()`; `CanAvoidByJump/CanAvoidBySlide` flags.
